@@ -21,10 +21,10 @@ def init_seeds(seed=0):
 def select_device(device='', apex=False, batch_size=None):
     # device = 'cpu' or '0' or '0,1,2,3'
     cpu_request = device.lower() == 'cpu'
-    if device and not cpu_request:  # if device requested other than 'cpu'
-        os.environ['CUDA_VISIBLE_DEVICES'] = device  # set environment variable
-        assert torch.cuda.is_available(), 'CUDA unavailable, invalid device %s requested' % device  # check availablity
+    # if device and not cpu_request:  # if device requested other than 'cpu'
+        # assert torch.cuda.is_available(), 'CUDA unavailable, invalid device %s requested' % device  # check availablity
 
+    # os.environ['CUDA_VISIBLE_DEVICES'] = device  # set environment variable
     cuda = False if cpu_request else torch.cuda.is_available()
     if cuda:
         c = 1024 ** 2  # bytes to MB

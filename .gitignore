@@ -1,0 +1,13 @@
+# data
+data/MangoYOLO/
+data/MangoYOLO-train/
+data/MangoYOLO-val/
+data/MangoYOLO-test/
+data/VisDrone2019-DET-train/
+data/VisDrone2019-DET-val/
+data/VisDrone2019-DET-test-challenge/
+# weights
+weights/
+runs/
+*.txt
+*.jpg

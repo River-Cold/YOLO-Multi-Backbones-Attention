@@ -12,14 +12,14 @@ This Repository includes YOLOv3 with some lightweight backbones (***ShuffleNetV2
 ***2020.9.26***  
 (1) Add VoVNet as the backbone. The result is excellent.
 
-| Model | Params | FPS | mAP |
-| ----- | ----- | ----- |----- |
-| GhostNet+YOLOv3 | 23.49M | 62.5 | 35.1 |
-| Pruned Model+Distillation | 5.81M | 76.9 | 34.3 |
-| Pruned Model+INT8 | 5.81M | 75.1 | 34 |
-| YOLOv5s | 7.27M | - | 32.7 |
-| YOLOv5x | 88.5M | - | 41.8 |  
-| VoVNet | 42.8M | 28.9 | 42.7 |  
+| Model                     | Params | FPS  | mAP  |
+| ------------------------- | ------ | ---- | ---- |
+| GhostNet+YOLOv3           | 23.49M | 62.5 | 35.1 |
+| Pruned Model+Distillation | 5.81M  | 76.9 | 34.3 |
+| Pruned Model+INT8         | 5.81M  | 75.1 | 34   |
+| YOLOv5s                   | 7.27M  | -    | 32.7 |
+| YOLOv5x                   | 88.5M  | -    | 41.8 |
+| VoVNet                    | 42.8M  | 28.9 | 42.7 |
 
 ***Attention : Single GPU will be better***  
 ***If you need previous attention model or have any question, you can add my WeChat: AutrefoisLethe***
@@ -41,13 +41,26 @@ https://pan.baidu.com/s/1Fc-zJtHy-6iIewvsKWPDnA     (extract code: k2js)
 1. Download the datasets, place them in the ***data*** directory    
 2. Train the models by using following command (change the model structure by changing the cfg file)  
 ```
+  # original
   python3 train.py --data data/visdrone.data --batch-size 16 --cfg cfg/ghost-yolov3-visdrone.cfg --img-size 640
+  # yolov3.weights
+  python train.py --data data/visdrone.data --batch-size 16 --cfg cfg/ghost-yolov3-visdrone.cfg --img-size 640 --weights weights/yolov3.weights
+  # yolov3.weights
+  python train.py --data data/mangoyolo.data --batch-size 16 --cfg cfg/ghost-yolov3-mangoyolo.cfg --img-size 640 --weights weights/yolov3.weights --epochs=10
 ```
-3. Detect objects using the trained model (place the pictures or videos in the ***samples*** directory)    
+1. Detect objects using the trained model (place the pictures or videos in the ***samples*** directory)    
 ```
-  python3 detect.py --cfg cfg/ghostnet-yolov3-visdrone.cfg --weights weights/best.pt --data data/visdrone.data
+  python3 detect.py --cfg cfg/ghostnet-yolov3-visdrone.cfg --weights weights/best.pt --names data/visdrone.names
+  python detect.py --cfg cfg/ghost-yolov3-visdrone.cfg --weights weights/best.pt --names data/visdrone.names
+  python detect.py --cfg cfg/ghost-yolov3-visdrone.cfg --weights weights/best.pt --names data/mangoyolo.names
 ```
-4. Results:  
+
+4. Evaluation:
+```
+python test.py --cfg cfg/ghost-yolov3-visdrone.cfg --data data/visdrone.data --weights weights/best.pt
+```
+
+5. Results:  
 ![most](https://github.com/HaloTrouvaille/YOLO-Multi-Backbones-Attention/blob/master/output/most.png)  
 ![car](https://github.com/HaloTrouvaille/YOLO-Multi-Backbones-Attention/blob/master/output/car.png)  
 ![airplane](https://github.com/HaloTrouvaille/YOLO-Multi-Backbones-Attention/blob/master/output/airplane.png)  
@@ -56,6 +69,12 @@ https://pan.baidu.com/s/1Fc-zJtHy-6iIewvsKWPDnA     (extract code: k2js)
 First of all, execute sparse training.  
 ```
 python3 train.py --data data/visdrone.data --batch-size 4 --cfg cfg/ghost-yolov3-visdrone.cfg --img-size 640 --epochs 300  --device 3 -sr --s 0.0001
+
+python train.py --data data/visdrone.data --batch-size 4 --cfg cfg/ghost-yolov3-visdrone.cfg --img-size 640 --epochs 1  --device 3 -sr --s 0.0001 --weights weights/yolov3-spp-ultralytics.pt
+
+nohup python train.py --data data/visdrone.data --batch-size 8 --cfg cfg/ghost-yolov3-visdrone.cfg --img-size 640 --epochs 100  --device 1 -sr --s 0.0001 --weights weights/yolov3.weights > train.log 2>&1 &
+
+ps -aux | grep "train.py" 
 ```
 Then change cfg and weights in normal_prune.py then use following command  
 ```
@@ -75,28 +94,28 @@ If you want to quantize certain convolutional layer, you can just change the [co
 # Experiment Result for Changing YOLOv3 Backbone
 ## ShuffleNetV2 + Two Scales Detection(YOLO Detector)
 ### Using Oxfordhand datasets
-| Model | Params | Model Size | mAP |
-| ----- | ----- | ----- |----- |
-| ShuffleNetV2 1x | 3.57M | 13.89MB | 51.2 |
-| ShuffleNetV2 1.5x | 5.07M | 19.55MB | 56.4 |
-| YOLOv3-tiny | 8.67M | 33.1MB | 60.3 |
+| Model             | Params | Model Size | mAP  |
+| ----------------- | ------ | ---------- | ---- |
+| ShuffleNetV2 1x   | 3.57M  | 13.89MB    | 51.2 |
+| ShuffleNetV2 1.5x | 5.07M  | 19.55MB    | 56.4 |
+| YOLOv3-tiny       | 8.67M  | 33.1MB     | 60.3 |
 ### Using Visdrone datasets(Incomplete training)
-| Model | Params | Model Size | mAP |
-| ----- | ----- | ----- |----- |
-| ShuffleNetV2 1x | 3.59M | 13.99MB | 10.2 |
-| ShuffleNetV2 1.5x | 5.09M | 19.63MB | 11 |
-| YOLOv3-tiny | 8.69M | 33.9MB | 3.3 |
+| Model             | Params | Model Size | mAP  |
+| ----------------- | ------ | ---------- | ---- |
+| ShuffleNetV2 1x   | 3.59M  | 13.99MB    | 10.2 |
+| ShuffleNetV2 1.5x | 5.09M  | 19.63MB    | 11   |
+| YOLOv3-tiny       | 8.69M  | 33.9MB     | 3.3  |
 # Experiment Result for Attention Mechanism
 ### Based on YOLOv3-tiny
 SE Block paper : https://arxiv.org/abs/1709.01507  
 CBAM Block paper : https://arxiv.org/abs/1807.06521  
 ECA Block paper : https://arxiv.org/abs/1910.03151  
-| Model | Params | mAP |
-| ----- | ----- | ----- |
-| YOLOv3-tiny | 8.67M | 60.3 |
-| YOLOv3-tiny + SE | 8.933M | 62.3 |
-| YOLOv3-tiny + CBAM | 8.81M | 62.7 |
-| YOLOv3-tiny + ECA | 8.67M | 62.6 |
+| Model              | Params | mAP  |
+| ------------------ | ------ | ---- |
+| YOLOv3-tiny        | 8.67M  | 60.3 |
+| YOLOv3-tiny + SE   | 8.933M | 62.3 |
+| YOLOv3-tiny + CBAM | 8.81M  | 62.7 |
+| YOLOv3-tiny + ECA  | 8.67M  | 62.6 |
 
  
 # TODO
@@ -108,3 +127,5 @@ ECA Block paper : https://arxiv.org/abs/1910.03151
 - [ ] Other pruning strategies
 
 
+scp -r infname239@192.168.88.239:/home/yolov3/YOLO-Multi-Backbones-Attention/data ./
+scp -r F:\code\DeepLearning\YOLO-Multi-Backbones-Attention\data\MangoYOLO-train infname207@192.168.88.207:

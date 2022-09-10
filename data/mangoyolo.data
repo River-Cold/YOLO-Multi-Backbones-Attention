@@ -1,0 +1,5 @@
+classes= 1
+train=data/MangoYOLO-train/train.txt
+valid=data/MangoYOLO-val/val.txt
+test=data/MangoYOLO-test/test.txt
+names=data/mangoyolo.names

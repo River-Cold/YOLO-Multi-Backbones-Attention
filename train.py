@@ -120,19 +120,22 @@ def train(hyp):
     start_epoch = 0
     best_fitness = 0.0
 
-    #attempt_download(weights)
+    # attempt_download(weights)
     # 待修改
     pretrain = False
-    imagenetpre = False
+    # pretrain = True
+    # imagenetpre = False
+    imagenetpre = True
     if imagenetpre:
         model_dict = model.state_dict()
-        pretrained_dict = torch.load('weights/checkpoint.t7',map_location='cuda:3')
+        # pretrained_dict = torch.load('weights/checkpoint.t7',map_location='cuda:3')
+        pretrained_dict = torch.load('weights/state_dict_73.98.pth',map_location=device)
         pretrained_dict = {k: v for k, v in model_dict.items() if k in pretrained_dict}
         model_dict.update(pretrained_dict)
         model.load_state_dict(model_dict)
         print("Load Imagenet pretrain successfully!")
     if pretrain:
-        attempt_download(weights)
+        # attempt_download(weights)
         if weights.endswith('.pt'):  # pytorch format
             # possible weights are '*.pt', 'yolov3-spp.pt', 'yolov3-tiny.pt' etc.
             chkpt = torch.load(weights, map_location=device)
@@ -463,7 +466,7 @@ if __name__ == '__main__':
     parser.add_argument('--t_weights', type=str, default='', help='teacher model weights')
     opt = parser.parse_args()
     opt.weights = last if opt.resume else opt.weights
-    check_git_status()
+    # check_git_status()
     opt.cfg = list(glob.iglob('./**/' + opt.cfg, recursive=True))[0]  # find file
     # opt.data = list(glob.iglob('./**/' + opt.data, recursive=True))[0]  # find file
     print(opt)

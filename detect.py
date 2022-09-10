@@ -72,6 +72,7 @@ def detect(save_img=False):
 
     # Get names and colors
     names = load_classes(opt.names)
+    print('names: ', names)
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
 
     # Run inference
@@ -119,6 +120,9 @@ def detect(save_img=False):
                 # Print results
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
+                    # print('s: ', s)
+                    # print('c: ', c)
+                    # print('names[int(c)]: ', names[int(c)])
                     s += '%g %ss, ' % (n, names[int(c)])  # add to string
 
                 # Write results
